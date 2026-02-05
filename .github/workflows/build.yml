@@ -20,6 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: openwrt/imagebuilder
+      options: --user root
 
     steps:
       - name: Checkout
@@ -29,7 +30,7 @@ jobs:
         run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
 
       - name: Build Firmware
-        run: make -j$(nproc)
+        run: FORCE_UNSAFE_CONFIGURE=1 make -j$(nproc)
 
       - name: Upload Firmware
         uses: actions/upload-artifact@v4
