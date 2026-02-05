@@ -17,9 +17,41 @@ Sunshine!
 
 To build your own firmware you need a GNU/Linux, BSD or MacOSX system (case
 sensitive filesystem required). Cygwin is unsupported because of the lack of a
-case sensitive file system.
+case sensitive file system. Docker can also be used to make it easier to build.
 
-### Requirements
+
+### Quick start using Docker/Podman
+
+1. Run the container:
+    
+```bash
+# using podman
+podman run --rm -v "$(pwd)":/source --user root -it openwrt/imagebuilder
+
+# using docker
+docker run --rm -v "$(pwd)":/source -it openwrt/imagebuilder
+```
+
+2. Run `cd /source`
+
+3. Run `./scripts/feeds update -a` to obtain all the latest package definitions
+   defined in feeds.conf / feeds.conf.default
+
+4. Run `./scripts/feeds install -a` to install symlinks for all obtained
+   packages into package/feeds/
+
+5. Optionally run `make menuconfig` to select your preferred configuration for the
+   toolchain, target system & firmware packages. There's a standard config already generated, so this is not required.
+
+6. Run `FORCE_UNSAFE_CONFIGURE=1 make -j8` to build your firmware. This will download all sources, build the
+   cross-compile toolchain and then cross-compile the GNU/Linux kernel & all chosen
+   applications for your target system. Replace `8` with a number that matches your CPU count.
+
+The built package that can be installed via the web interface will be at
+`bin/targets/tr6560/generic/tgp3.3.4-THG6500-TAX2-squashfs-sysupgrade.bin`.
+
+
+### Requirements for building natively
 
 You need the following tools to compile OpenWrt, the package names vary between
 distributions. A complete list with distribution specific packages is found in
