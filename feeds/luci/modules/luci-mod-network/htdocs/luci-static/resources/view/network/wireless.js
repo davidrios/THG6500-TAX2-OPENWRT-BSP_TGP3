@@ -956,12 +956,10 @@ return view.extend({
 					o.value('2', _('High'));
 					o.value('3', _('Very High'));
 
-					//start of triductor
-					//o = ss.taboption('advanced', form.Value, 'distance', _('Distance Optimization'), _('Distance to farthest network member in meters.'));
-					//o.datatype = 'or(range(0,114750),"auto")';
-					//o.placeholder = 'auto';
-					//end of triductor
-					
+					o = ss.taboption('advanced', form.Value, 'distance', _('Distance Optimization'), _('Distance to farthest network member in meters.'));
+					o.datatype = 'or(range(0,114750),"auto")';
+					o.placeholder = 'auto';
+
 					o = ss.taboption('advanced', form.Value, 'frag', _('Fragmentation Threshold'));
 					o.datatype = 'min(256)';
 					o.placeholder = _('off');
@@ -992,10 +990,8 @@ return view.extend({
 				o = ss.taboption('general', form.ListValue, 'mode', _('Mode'));
 				o.value('ap', _('Access Point'));
 				o.value('sta', _('Client'));
-				//start of triductor
-				//o.value('adhoc', _('Ad-Hoc'));
-				//end of triductor
-				
+				o.value('adhoc', _('Ad-Hoc'));
+
 				o = ss.taboption('general', form.Value, 'mesh_id', _('Mesh Id'));
 				o.depends('mode', 'mesh');
 
@@ -1014,11 +1010,9 @@ return view.extend({
 				o.datatype = 'maxlength(32)';
 				o.depends('mode', 'ap');
 				o.depends('mode', 'sta');
-				//start of triductor
-				//o.depends('mode', 'adhoc');
-				//o.depends('mode', 'ahdemo');
-				//o.depends('mode', 'monitor');
-				//end of triductor
+				o.depends('mode', 'adhoc');
+				o.depends('mode', 'ahdemo');
+				o.depends('mode', 'monitor');
 				o.depends('mode', 'ap-wds');
 				o.depends('mode', 'sta-wds');
 				o.depends('mode', 'wds');
@@ -1079,13 +1073,11 @@ return view.extend({
 					    bssid = ss.children[5],
 					    encr;
 
-					//start of triductor
-					//mode.value('mesh', '802.11s');
-					//mode.value('ahdemo', _('Pseudo Ad-Hoc (ahdemo)'));
-					//mode.value('monitor', _('Monitor'));
+					mode.value('mesh', '802.11s');
+					mode.value('ahdemo', _('Pseudo Ad-Hoc (ahdemo)'));
+					mode.value('monitor', _('Monitor'));
 
-					//bssid.depends('mode', 'adhoc');
-					//end of triductor
+					bssid.depends('mode', 'adhoc');
 					bssid.depends('mode', 'sta');
 					bssid.depends('mode', 'sta-wds');
 
@@ -1182,39 +1174,33 @@ return view.extend({
 					o.placeholder = 600;
 					o.datatype    = 'uinteger';
 
-					//start of triductor
-					//o = ss.taboption('advanced', form.Flag , 'skip_inactivity_poll', _('Disable Inactivity Polling'));
-					//o.optional    = true;
-					//o.datatype    = 'uinteger';
-					//end of triductor
+					o = ss.taboption('advanced', form.Flag , 'skip_inactivity_poll', _('Disable Inactivity Polling'));
+					o.optional    = true;
+					o.datatype    = 'uinteger';
 
 					o = ss.taboption('advanced', form.Value, 'max_inactivity', _('Station inactivity limit'), _('sec'));
 					o.optional    = true;
 					o.placeholder = 300;
 					o.datatype    = 'uinteger';
 
-					//start of triductor
-					//o = ss.taboption('advanced', form.Value, 'max_listen_interval', _('Maximum allowed Listen Interval'));
-					//o.optional    = true;
-					//o.placeholder = 65535;
-					//o.datatype    = 'uinteger';
+					o = ss.taboption('advanced', form.Value, 'max_listen_interval', _('Maximum allowed Listen Interval'));
+					o.optional    = true;
+					o.placeholder = 65535;
+					o.datatype    = 'uinteger';
 
-					//o = ss.taboption('advanced', form.Flag, 'disassoc_low_ack', _('Disassociate On Low Acknowledgement'), _('Allow AP mode to disconnect STAs based on low ACK condition'));
-					//o.default = o.enabled;
-					//end of triductor
+					o = ss.taboption('advanced', form.Flag, 'disassoc_low_ack', _('Disassociate On Low Acknowledgement'), _('Allow AP mode to disconnect STAs based on low ACK condition'));
+					o.default = o.enabled;
 				}
 
 
 				encr = o = ss.taboption('encryption', form.ListValue, 'encryption', _('Encryption'));
 				o.depends('mode', 'ap');
 				o.depends('mode', 'sta');
-				//start of triductor
-				//o.depends('mode', 'adhoc');
-				//o.depends('mode', 'ahdemo');
+				o.depends('mode', 'adhoc');
+				o.depends('mode', 'ahdemo');
 				o.depends('mode', 'ap-wds');
 				o.depends('mode', 'sta-wds');
-				//o.depends('mode', 'mesh');
-				//end of triductor
+				o.depends('mode', 'mesh');
 
 				o.cfgvalue = function(section_id) {
 					var v = String(uci.get('wireless', section_id, 'encryption'));
@@ -1736,18 +1722,14 @@ return view.extend({
 						add_dependency_permutations(o, { mode: ['ap', 'ap-wds'], encryption: ['psk2', 'psk-mixed', 'sae', 'sae-mixed', 'wpa2', 'wpa3', 'wpa3-mixed'] });
 
 						if (L.hasSystemFeature('hostapd', 'wps') && L.hasSystemFeature('wpasupplicant')) {
-							o = ss.taboption('encryption', form.Flag, 'wps_pushbutton', _('Enable WPS pushbutton'))
+							o = ss.taboption('encryption', form.Flag, 'wps_pushbutton', _('Enable WPS pushbutton, requires WPA(2)-PSK/WPA3-SAE'))
 							o.enabled = '1';
 							o.disabled = '0';
 							o.default = o.disabled;
-							//start of triductor
-							//o.depends('encryption', 'psk');
-							//end of triductor
+							o.depends('encryption', 'psk');
 							o.depends('encryption', 'psk2');
 							o.depends('encryption', 'psk-mixed');
-							//start of triductor
-							//o.depends('encryption', 'sae');
-							//end of triductor
+							o.depends('encryption', 'sae');
 							o.depends('encryption', 'sae-mixed');
 						}
 					}

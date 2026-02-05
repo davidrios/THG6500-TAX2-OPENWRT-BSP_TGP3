@@ -3,3 +3,5 @@ build_dir
 dl
 tmp
 staging_dir
+scripts/config
+*/**/.github

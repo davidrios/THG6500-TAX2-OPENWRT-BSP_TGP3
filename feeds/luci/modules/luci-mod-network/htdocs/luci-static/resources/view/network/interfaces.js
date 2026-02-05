@@ -567,15 +567,6 @@ return view.extend({
 				}, this);
 
 				o = s.taboption('general', widgets.DeviceSelect, '_net_device', _('Device'));
-				//start of triductor
-				//"Network--->Interfaces--->Interfaces--->Edit"时，过滤device
-				o.filter = function(section_id, value) {
-					if(value.indexOf('eth')!=-1 || value.indexOf('lan')!=-1 || value.indexOf('ramonitor')!=-1 || value.indexOf('wlan')!=-1 || value.indexOf('cpu')!=-1)
-						return false;
-
-					return true;
-				};
-				//end of triductor
 				o.ucioption = 'device';
 				o.nobridges = false;
 				o.optional = false;
@@ -1131,15 +1122,6 @@ return view.extend({
 			proto.validate = name.validate;
 
 			device = s2.option(widgets.DeviceSelect, 'device', _('Device'));
-			//start of triductor
-			//"Network--->Interfaces--->Interfaces--->Add new interface..."中，过滤device
-			device.filter = function(section_id, value) {
-				if(value.indexOf('eth')!=-1 || value.indexOf('lan')!=-1 || value.indexOf('ramonitor')!=-1 || value.indexOf('wlan')!=-1 || value.indexOf('cpu')!=-1)
-					return false;
-
-				return true;
-			};
-			//end of triductor
 			device.noaliases = false;
 			device.optional = false;
 
@@ -1179,10 +1161,6 @@ return view.extend({
 									return m.save(function() {
 										var section_id = uci.add('network', 'interface', nameval);
 
-										if(protoval == 'dhcp') {
-											uci.set('network', section_id, 'reqopts', '33 43 249');
-											uci.set('network', section_id, 'vendorid', 'dslforum.org');
-										}
 										protoclass.set('proto', protoval);
 										protoclass.addDevice(device.formvalue('_new_'));
 
@@ -1283,12 +1261,6 @@ return view.extend({
 
 				if (netDevs[i].getType() == 'wifi' && !netDevs[i].isUp())
 					continue;
-
-				//start of triductor
-				//"Network--->Interfaces--->Devices"中，过滤device
-				if (netDevs[i].device.indexOf('eth')!=-1 || netDevs[i].device.indexOf('ramonitor')!=-1 || netDevs[i].device.indexOf('cpu')!=-1)
-					continue;
-				//end of triductor
 
 				/* Unless http://lists.openwrt.org/pipermail/openwrt-devel/2020-July/030397.html is implemented,
 				   we cannot properly redefine bridges as devices, so filter them away for now... */

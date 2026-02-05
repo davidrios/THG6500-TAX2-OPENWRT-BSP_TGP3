@@ -6,7 +6,7 @@
 			"path": "omcproxy"
 		},
 		"depends": {
-			"fs": { "/etc/config/omcproxy": "file" }
+			"uci": { "omcproxy": true }
 		}
 	}
 }

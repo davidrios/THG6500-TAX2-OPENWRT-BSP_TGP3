@@ -49,64 +49,6 @@ local function check_fs_depends(spec)
 	return true
 end
 
-local function check_neq_depends_options(conf, s, opts)
-	local uci = require "luci.model.uci"
-
-	if type(opts) == "string" then
-		return (s[".type"] ~= opts)
-	elseif type(opts) == "table" then
-		for option, value in pairs(opts) do
-			local sval = s[option]
-			if sval == value then
-				return false
-			end
-		end
-	end
-
-	return true
-end
-
-local function check_neq_depends_section(conf, sect)
-	local uci = require "luci.model.uci"
-
-	for section, options in pairs(sect) do
-		local stype = section:match("^@([A-Za-z0-9_%-]+)$")
-		if stype then
-			local found = false
-			uci:foreach(conf, stype, function(s)
-				if check_neq_depends_options(conf, s, options) then
-					found = true
-					return false
-				end
-			end)
-			if not found then
-				return false
-			end
-		else
-			local s = uci:get_all(conf, section)
-			if not s or not check_neq_depends_options(conf, s, options) then
-				return false
-			end
-		end
-	end
-
-	return true
-end
-
-local function check_neq_depends(conf)
-	local uci = require "luci.model.uci"
-
-	for config, values in pairs(conf) do
-		if type(values) == "table" then
-			if not check_neq_depends_section(config, values) then
-				return false
-			end
-		end
-	end
-
-	return true
-end
-
 local function check_uci_depends_options(conf, s, opts)
 	local uci = require "luci.model.uci"
 
@@ -259,21 +201,6 @@ local function check_depends(spec)
 		end
 	end
 
-	-- 添加不相等判断的逻辑
-	if type(spec.depends.neq) == "table" then
-		local satisfied = false
-		local alternatives = (#spec.depends.neq > 0) and spec.depends.neq or { spec.depends.neq }
-		for _, alternative in ipairs(alternatives) do
-			if check_neq_depends(alternative) then
-				satisfied = true
-				break
-			end
-		end
-		if not satisfied then
-			return false
-		end
-	end
-
 	return true
 end
 
@@ -407,14 +334,6 @@ local function tree_to_json(node, json)
 					spec.depends = spec.depends or {}
 					spec.depends.acl = spec.depends.acl or {}
 					spec.depends.acl[#spec.depends.acl + 1] = acl
-				end
-			end
-
-			if type(subnode.neq_depends) == "table" then
-				for k, v in pairs(subnode.neq_depends) do
-					spec.depends = spec.depends or {}
-					spec.depends.neq = spec.depends.neq or {}
-					spec.depends.neq[k] = v
 				end
 			end
 
@@ -650,9 +569,6 @@ local function session_setup(user, pass)
 		})
 		nixio.syslog("info", tostring("luci: accepted login on /%s for %s from %s\n"
 			%{ rp, user or "?", http.getenv("REMOTE_ADDR") or "?" }))
-
-		uci:set("rpcd", "@rpcd[0]", "user", user or "?")
-		--uci:commit()
 
 		return session_retrieve(login.ubus_rpc_session)
 	end

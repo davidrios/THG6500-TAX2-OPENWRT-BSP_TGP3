@@ -7,8 +7,7 @@
 			"path": "system/system"
 		},
 		"depends": {
-			"acl": [ "luci-mod-system-config" ],
-			"neq": { "prplmesh": { "@prplmesh": { "management_mode": "Multi-AP-Agent" } } }
+			"acl": [ "luci-mod-system-config" ]
 		}
 	},
 
@@ -19,8 +18,7 @@
 			"type": "firstchild"
 		},
 		"depends": {
-			"acl": [ "luci-mod-system-config", "luci-mod-system-ssh" ],
-			"neq": { "prplmesh": { "@prplmesh": { "management_mode": "Multi-AP-Agent" } } }
+			"acl": [ "luci-mod-system-config", "luci-mod-system-ssh" ]
 		}
 	},
 
@@ -84,8 +82,7 @@
 			"path": "system/startup"
 		},
 		"depends": {
-			"acl": [ "luci-mod-system-init" ],
-			"neq": { "prplmesh": { "@prplmesh": { "management_mode": "Multi-AP-Agent" } } }
+			"acl": [ "luci-mod-system-init" ]
 		}
 	},
 
@@ -97,8 +94,7 @@
 			"path": "system/crontab"
 		},
 		"depends": {
-			"acl": [ "luci-mod-system-cron" ],
-			"neq": { "prplmesh": { "@prplmesh": { "management_mode": "Multi-AP-Agent" } } }
+			"acl": [ "luci-mod-system-cron" ]
 		}
 	},
 
@@ -124,8 +120,7 @@
 		},
 		"depends": {
 			"acl": [ "luci-mod-system-config" ],
-			"fs": { "/sys/class/leds": "directory" },
-			"neq": { "prplmesh": { "@prplmesh": { "management_mode": "Multi-AP-Agent" } } }
+			"fs": { "/sys/class/leds": "directory" }
 		}
 	},
 

@@ -38,9 +38,6 @@
 		"action": {
 			"type": "firstchild",
 			"recurse": true
-		},
-		"depends": {
-			"neq": { "prplmesh": { "@prplmesh": { "management_mode": "Multi-AP-Agent" } } }
 		}
 	},
 
@@ -50,9 +47,6 @@
 		"action": {
 			"type": "firstchild",
 			"recurse": true
-		},
-		"depends": {
-			"neq": { "prplmesh": { "@prplmesh": { "management_mode": "Multi-AP-Agent" } } }
 		}
 	},
 

@@ -340,14 +340,12 @@ return baseclass.extend({
 
 		o = this.replaceOption(s, 'devgeneral', form.ListValue, 'type', _('Device type'));
 		o.readonly = !isNew;
-		//start of triductor
 		o.value('', _('Network device'));
 		o.value('bridge', _('Bridge device'));
 		o.value('8021q', _('VLAN (802.1q)'));
-		//o.value('8021ad', _('VLAN (802.1ad)'));
-		//o.value('macvlan', _('MAC VLAN'));
-		//o.value('veth', _('Virtual Ethernet'));
-		//end of triductor
+		o.value('8021ad', _('VLAN (802.1ad)'));
+		o.value('macvlan', _('MAC VLAN'));
+		o.value('veth', _('Virtual Ethernet'));
 		o.validate = function(section_id, value) {
 			if (value == 'bridge' || value == 'veth')
 				updatePlaceholders(this.section.getOption('name_complex'), section_id);
@@ -363,11 +361,6 @@ return baseclass.extend({
 		o.ucioption = 'name';
 		o.filter = function(section_id, value) {
 			var dev = network.instantiateDevice(value);
-			//start of triductor
-			//增加device时，"Device type"选择"Network Device"时，过滤'Existing device'
-			if(dev.getName().indexOf('erspan')!=-1 || dev.getName().indexOf('eth')!=-1 || dev.getName().indexOf('ramonitor')!=-1 ||dev.getName().indexOf('cpu')!=-1)
-				return false;
-			//end of triductor
 			return !deviceSectionExists(section_id, value) && (dev.getType() != 'wifi' || dev.isUp());
 		};
 		o.validate = function(section_id, value) {
@@ -389,11 +382,7 @@ return baseclass.extend({
 		o.ucioption = 'ifname';
 		o.filter = function(section_id, value) {
 			var dev = network.instantiateDevice(value);
-			//start of triductor
-			//增加device时，"Device type"选择"VLAN(802.1q)"时，过滤'Base device'
-			//return (dev.getType() != 'wifi' || dev.isUp());
-			return dev.getName()=='wan';
-			//end of triductor
+			return (dev.getType() != 'wifi' || dev.isUp());
 		};
 		o.validate = function(section_id, value) {
 			updatePlaceholders(this, section_id);
@@ -485,12 +474,6 @@ return baseclass.extend({
 		o.ucioption = 'ports';
 		o.default = L.toArray(dev ? dev.getPorts() : null).filter(function(p) { return p.getType() != 'wifi' }).map(function(p) { return p.getName() });
 		o.filter = function(section_id, device_name) {
-			//start of triductor
-			//过滤桥device下的端口
-			if(device_name.indexOf('erspan')!=-1 || device_name.indexOf('eth')!=-1 || device_name.indexOf('ramonitor')!=-1 || device_name.indexOf('cpu')!=-1)
-				return false;
-			//end of triductor
-
 			var bridge_name = uci.get('network', section_id, 'name'),
 				choice_dev = network.instantiateDevice(device_name),
 				parent_dev = choice_dev.getParent();
@@ -561,38 +544,38 @@ return baseclass.extend({
 		o.datatype = 'uinteger';
 		o.depends({ type: 'bridge', igmp_snooping: '1' });
 
-//		o = this.replaceOption(s, 'devadvanced', form.Flag, 'multicast_querier', _('Enable multicast querier'));
-//		o.defaults = { '1': [{'igmp_snooping': '1'}], '0': [{'igmp_snooping': '0'}] };
-//		o.depends('type', 'bridge');
+		o = this.replaceOption(s, 'devadvanced', form.Flag, 'multicast_querier', _('Enable multicast querier'));
+		o.defaults = { '1': [{'igmp_snooping': '1'}], '0': [{'igmp_snooping': '0'}] };
+		o.depends('type', 'bridge');
 
-//		o = this.replaceOption(s, 'devadvanced', form.Value, 'robustness', _('Robustness'), _('The robustness value allows tuning for the expected packet loss on the network. If a network is expected to be lossy, the robustness value may be increased. IGMP is robust to (Robustness-1) packet losses'));
-//		o.placeholder = '2';
-//		o.datatype = 'min(1)';
-//		o.depends({ type: 'bridge', multicast_querier: '1' });
+		o = this.replaceOption(s, 'devadvanced', form.Value, 'robustness', _('Robustness'), _('The robustness value allows tuning for the expected packet loss on the network. If a network is expected to be lossy, the robustness value may be increased. IGMP is robust to (Robustness-1) packet losses'));
+		o.placeholder = '2';
+		o.datatype = 'min(1)';
+		o.depends({ type: 'bridge', multicast_querier: '1' });
 
-//		o = this.replaceOption(s, 'devadvanced', form.Value, 'query_interval', _('Query interval'), _('Interval in centiseconds between multicast general queries. By varying the value, an administrator may tune the number of IGMP messages on the subnet; larger values cause IGMP Queries to be sent less often'));
-//		o.placeholder = '12500';
-//		o.datatype = 'uinteger';
-//		o.depends({ type: 'bridge', multicast_querier: '1' });
+		o = this.replaceOption(s, 'devadvanced', form.Value, 'query_interval', _('Query interval'), _('Interval in centiseconds between multicast general queries. By varying the value, an administrator may tune the number of IGMP messages on the subnet; larger values cause IGMP Queries to be sent less often'));
+		o.placeholder = '12500';
+		o.datatype = 'uinteger';
+		o.depends({ type: 'bridge', multicast_querier: '1' });
 
-//		o = this.replaceOption(s, 'devadvanced', form.Value, 'query_response_interval', _('Query response interval'), _('The max response time in centiseconds inserted into the periodic general queries. By varying the value, an administrator may tune the burstiness of IGMP messages on the subnet; larger values make the traffic less bursty, as host responses are spread out over a larger interval'));
-//		o.placeholder = '1000';
-//		o.datatype = 'uinteger';
-//		o.validate = function(section_id, value) {
-//			var qiopt = L.toArray(this.map.lookupOption('query_interval', section_id))[0],
-//			    qival = qiopt ? (qiopt.formvalue(section_id) || qiopt.placeholder) : '';
+		o = this.replaceOption(s, 'devadvanced', form.Value, 'query_response_interval', _('Query response interval'), _('The max response time in centiseconds inserted into the periodic general queries. By varying the value, an administrator may tune the burstiness of IGMP messages on the subnet; larger values make the traffic less bursty, as host responses are spread out over a larger interval'));
+		o.placeholder = '1000';
+		o.datatype = 'uinteger';
+		o.validate = function(section_id, value) {
+			var qiopt = L.toArray(this.map.lookupOption('query_interval', section_id))[0],
+			    qival = qiopt ? (qiopt.formvalue(section_id) || qiopt.placeholder) : '';
 
-//			if (value != '' && qival != '' && +value >= +qival)
-//				return _('The query response interval must be lower than the query interval value');
+			if (value != '' && qival != '' && +value >= +qival)
+				return _('The query response interval must be lower than the query interval value');
 
-//			return true;
-//		};
-//		o.depends({ type: 'bridge', multicast_querier: '1' });
+			return true;
+		};
+		o.depends({ type: 'bridge', multicast_querier: '1' });
 
-//		o = this.replaceOption(s, 'devadvanced', form.Value, 'last_member_interval', _('Last member interval'), _('The max response time in centiseconds inserted into group-specific queries sent in response to leave group messages. It is also the amount of time between group-specific query messages. This value may be tuned to modify the "leave latency" of the network. A reduced value results in reduced time to detect the loss of the last member of a group'));
-//		o.placeholder = '100';
-//		o.datatype = 'uinteger';
-//		o.depends({ type: 'bridge', multicast_querier: '1' });
+		o = this.replaceOption(s, 'devadvanced', form.Value, 'last_member_interval', _('Last member interval'), _('The max response time in centiseconds inserted into group-specific queries sent in response to leave group messages. It is also the amount of time between group-specific query messages. This value may be tuned to modify the "leave latency" of the network. A reduced value results in reduced time to detect the loss of the last member of a group'));
+		o.placeholder = '100';
+		o.datatype = 'uinteger';
+		o.depends({ type: 'bridge', multicast_querier: '1' });
 
 		o = this.replaceOption(s, 'devgeneral', form.Value, 'mtu', _('MTU'));
 		o.datatype = 'range(576, 9200)';
@@ -693,21 +676,21 @@ return baseclass.extend({
 		o.depends('ipv6', '1');
 
 
-//		o = this.replaceOption(s, 'devadvanced', form.Flag, 'multicast', _('Enable multicast support'));
-//		o.default = o.enabled;
+		o = this.replaceOption(s, 'devadvanced', form.Flag, 'multicast', _('Enable multicast support'));
+		o.default = o.enabled;
 
-//		o = this.replaceOption(s, 'devadvanced', form.ListValue, 'igmpversion', _('Force IGMP version'));
-//		o.value('', _('No enforcement'));
-//		o.value('1', _('Enforce IGMPv1'));
-//		o.value('2', _('Enforce IGMPv2'));
-//		o.value('3', _('Enforce IGMPv3'));
-//		o.depends('multicast', '1');
+		o = this.replaceOption(s, 'devadvanced', form.ListValue, 'igmpversion', _('Force IGMP version'));
+		o.value('', _('No enforcement'));
+		o.value('1', _('Enforce IGMPv1'));
+		o.value('2', _('Enforce IGMPv2'));
+		o.value('3', _('Enforce IGMPv3'));
+		o.depends('multicast', '1');
 
-//		o = this.replaceOption(s, 'devadvanced', form.ListValue, 'mldversion', _('Force MLD version'));
-//		o.value('', _('No enforcement'));
-//		o.value('1', _('Enforce MLD version 1'));
-//		o.value('2', _('Enforce MLD version 2'));
-//		o.depends('multicast', '1');
+		o = this.replaceOption(s, 'devadvanced', form.ListValue, 'mldversion', _('Force MLD version'));
+		o.value('', _('No enforcement'));
+		o.value('1', _('Enforce MLD version 1'));
+		o.value('2', _('Enforce MLD version 2'));
+		o.depends('multicast', '1');
 
 		if (isBridgePort(dev)) {
 			o = this.replaceOption(s, 'brport', form.Flag, 'learning', _('Enable MAC address learning'));

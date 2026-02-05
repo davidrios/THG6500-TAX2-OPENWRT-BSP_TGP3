@@ -31,7 +31,7 @@ Version: 1.21.3-1
 Depends: +libc +USE_GLIBC:librt +USE_GLIBC:libpthread +libopenssl +libpthread +libpcre +nginx-ssl-util +zlib +liblua +libxml2 +libubus +libblobmsg-json +libjson-c
 Conflicts: 
 Menu-Depends: 
-Provides:  nginx-ssl
+Provides: nginx-ssl
 Build-Variant: all-module
 Section: net
 Category: Network

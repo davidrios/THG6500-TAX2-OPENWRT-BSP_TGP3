@@ -7,8 +7,7 @@
 			"path": "opkg"
 		},
 		"depends": {
-			"acl": [ "luci-app-opkg" ],
-			"neq": { "prplmesh": { "@prplmesh": { "management_mode": "Multi-AP-Agent" } } }
+			"acl": [ "luci-app-opkg" ]
 		}
 	}
 }

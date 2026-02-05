@@ -113,7 +113,7 @@ config LIBCURL_PROXY
 
 config LIBCURL_CRYPTO_AUTH
 	bool "Enable cryptographic authentication"
-	default y
+	default n
 
 config LIBCURL_TLS_SRP
 	bool "Enable TLS-SRP authentication"
