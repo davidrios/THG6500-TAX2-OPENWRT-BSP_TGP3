@@ -1,0 +1,64 @@
+name: Build and Release
+
+on:
+  # push:
+  #   branches: [ "master", "main" ]
+  #   tags:
+  #     - 'v*'
+  # pull_request:
+  #   branches: [ "master", "main" ]
+  workflow_dispatch:
+    inputs:
+      publish_nightly:
+        description: 'Publish nightly release'
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: openwrt/imagebuilder
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Mark git safe directory
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+
+      - name: Update feeds
+        run: ./scripts/feeds update -a
+
+      - name: Install feeds
+        run: ./scripts/feeds install -a
+
+      - name: Build Firmware
+        run: make -j$(nproc)
+
+      - name: Upload Firmware
+        uses: actions/upload-artifact@v4
+        with:
+          name: firmware
+          path: bin/targets/tr6560/generic/*.bin
+
+      - name: Upload Packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: packages
+          path: bin/targets/tr6560/generic/packages/kmod-bpi-temp*.ipk
+
+      - name: Publish Nightly
+        uses: softprops/action-gh-release@v2
+        if: github.event_name == 'workflow_dispatch' && inputs.publish_nightly == true
+        with:
+          files: |
+            bin/targets/tr6560/generic/*.bin
+            bin/targets/tr6560/generic/packages/kmod-bpi-temp*.ipk
+
+          tag_name: nightly
+          prerelease: true
+          draft: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
