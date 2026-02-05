@@ -28,12 +28,6 @@ jobs:
       - name: Mark git safe directory
         run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
 
-      - name: Update feeds
-        run: ./scripts/feeds update -a
-
-      - name: Install feeds
-        run: ./scripts/feeds install -a
-
       - name: Build Firmware
         run: make -j$(nproc)
 
