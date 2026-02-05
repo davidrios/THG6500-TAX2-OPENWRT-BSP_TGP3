@@ -111,6 +111,8 @@ KERNEL_MAKE_FLAGS = \
 	KBUILD_BUILD_VERSION="0" \
 	HOST_LOADLIBES="-L$(STAGING_DIR_HOST)/lib" \
 	KBUILD_HOSTLDLIBS="-L$(STAGING_DIR_HOST)/lib" \
+	HOSTLDLIBS_extract-cert="-lcrypto -lpthread" \
+	HOSTLDLIBS_sign-file="-lcrypto -lpthread" \
 	CONFIG_SHELL="$(BASH)" \
 	$(if $(findstring c,$(OPENWRT_VERBOSE)),V=1,V='') \
 	$(if $(PKG_BUILD_ID),LDFLAGS_MODULE=--build-id=0x$(PKG_BUILD_ID)) \
